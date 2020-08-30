@@ -5,13 +5,6 @@ body.appendChild(table)
 table.style.width = '50%'
 table.setAttribute('align', 'center')
 
-let data = []
-fetch('./data.json')
-    .then(response => response.json())
-    .then(array => {
-        data = array
-    })
-
 const headerRow = document.createElement('tr')
 const tableHead = document.createElement('thead')
 
@@ -28,46 +21,51 @@ table.appendChild(tableHead)
 
 const tableBody = document.createElement('tbody')
 
-setTimeout(() => data.forEach(person => {
-    const row = document.createElement('tr')
+let data = []
+fetch('./data.json')
+    .then(response => response.json())
+    .then(array => {
+        data = array
+    }).then(
+    () => data.forEach(person => {
+        const row = document.createElement('tr')
 
-    Object.keys(person).forEach(key => {
-        if (key === 'name') {
-            const element = document.createElement('td')
-            const textNode = document.createTextNode(person[key].firstName)
-            element.appendChild(textNode)
-            row.appendChild(element)
-            const element2 = document.createElement('td')
-            const textNode2 = document.createTextNode(person[key].lastName)
-            element2.appendChild(textNode2)
-            row.appendChild(element2)
-        } else if (key === 'about') {
-            const element = document.createElement('td')
-            const textNode = document.createTextNode(person[key])
-            element.style.display = '-webkit-box'
-            element.style.webkitLineClamp = '2'
-            element.style.webkitBoxOrient = 'vertical'
-            element.style.overflow = 'hidden'
-            element.style.textOverflow = 'ellipsis'
-            element.appendChild(textNode)
-            row.appendChild(element)
-        } else if (key === 'eyeColor') {
-            const element = document.createElement('td')
-            const textNode = document.createTextNode(person[key])
-            element.appendChild(textNode)
-            row.appendChild(element)
-        }
+        Object.keys(person).forEach(key => {
+            if (key === 'name') {
+                const element = document.createElement('td')
+                const textNode = document.createTextNode(person[key].firstName)
+                element.appendChild(textNode)
+                row.appendChild(element)
+                const element2 = document.createElement('td')
+                const textNode2 = document.createTextNode(person[key].lastName)
+                element2.appendChild(textNode2)
+                row.appendChild(element2)
+            } else if (key === 'about') {
+                const element = document.createElement('td')
+                const textNode = document.createTextNode(person[key])
+                element.style.display = '-webkit-box'
+                element.style.webkitLineClamp = '2'
+                element.style.webkitBoxOrient = 'vertical'
+                element.style.overflow = 'hidden'
+                element.style.textOverflow = 'ellipsis'
+                element.appendChild(textNode)
+                row.appendChild(element)
+            } else if (key === 'eyeColor') {
+                const element = document.createElement('td')
+                const textNode = document.createTextNode(person[key])
+                element.appendChild(textNode)
+                row.appendChild(element)
+            }
+        })
 
-    })
+        const edit = document.createElement('input')
+        edit.type = 'button'
+        edit.value = 'Edit'
+        edit.addEventListener('click', event => editRow(event))
 
-    const edit = document.createElement('input')
-    edit.type = 'button'
-    edit.value = 'Edit'
-    edit.addEventListener('click', event => editRow(event))
-
-    row.appendChild(edit)
-    tableBody.appendChild(row)
-}), 30)
+        row.appendChild(edit)
+        tableBody.appendChild(row)
+    }))
 table.appendChild(tableBody)
 
 const editRow = ({target}) => {
