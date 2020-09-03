@@ -21,40 +21,68 @@ table.appendChild(tableHead)
 
 const tableBody = document.createElement('tbody')
 
-let data = []
+let persons
 fetch('./data.json')
     .then(response => response.json())
-    .then(array => {
-        data = array
-    }).then(
-    () => data.forEach(person => {
+    .then(
+        data => {
+            persons = data
+            createTable(1)
+            const pageNumber = Math.ceil(persons.length / 10)
+            addButtons(pageNumber)
+        })
+
+const addButtons = amount => {
+    const buttonHolder = document.createElement('div')
+    buttonHolder.style.textAlign = 'center'
+    for (let i = 0; i < amount; i++) {
+        const button = document.createElement('input')
+        button.type = 'button'
+        button.value = (i + 1).toString()
+        buttonHolder.appendChild(button)
+        button.addEventListener('click', event => createTable(event.toElement.defaultValue))
+    }
+    body.appendChild(buttonHolder)
+}
+
+const createTable = (pageNumber) => {
+    tableBody.textContent = ''
+    persons.slice(10 * (pageNumber - 1), 10 * pageNumber).forEach(person => {
         const row = document.createElement('tr')
 
         Object.keys(person).forEach(key => {
-            if (key === 'name') {
-                const element = document.createElement('td')
-                const textNode = document.createTextNode(person[key].firstName)
-                element.appendChild(textNode)
-                row.appendChild(element)
-                const element2 = document.createElement('td')
-                const textNode2 = document.createTextNode(person[key].lastName)
-                element2.appendChild(textNode2)
-                row.appendChild(element2)
-            } else if (key === 'about') {
-                const element = document.createElement('td')
-                const textNode = document.createTextNode(person[key])
-                element.style.display = '-webkit-box'
-                element.style.webkitLineClamp = '2'
-                element.style.webkitBoxOrient = 'vertical'
-                element.style.overflow = 'hidden'
-                element.style.textOverflow = 'ellipsis'
-                element.appendChild(textNode)
-                row.appendChild(element)
-            } else if (key === 'eyeColor') {
-                const element = document.createElement('td')
-                const textNode = document.createTextNode(person[key])
-                element.appendChild(textNode)
-                row.appendChild(element)
+            switch (key) {
+                case 'name': {
+
+                    const element = document.createElement('td')
+                    const textNode = document.createTextNode(person[key].firstName)
+                    element.appendChild(textNode)
+                    row.appendChild(element)
+                    const element2 = document.createElement('td')
+                    const textNode2 = document.createTextNode(person[key].lastName)
+                    element2.appendChild(textNode2)
+                    row.appendChild(element2)
+                    break
+                }
+                case 'about': {
+                    const element = document.createElement('td')
+                    const textNode = document.createTextNode(person[key])
+                    element.style.display = '-webkit-box'
+                    element.style.webkitLineClamp = '2'
+                    element.style.webkitBoxOrient = 'vertical'
+                    element.style.overflow = 'hidden'
+                    element.style.textOverflow = 'ellipsis'
+                    element.appendChild(textNode)
+                    row.appendChild(element)
+                    break
+                }
+                case 'eyeColor': {
+                    const element = document.createElement('td')
+                    const textNode = document.createTextNode(person[key])
+                    element.appendChild(textNode)
+                    row.appendChild(element)
+                    break
+                }
             }
         })
 
@@ -65,8 +93,9 @@ fetch('./data.json')
 
         row.appendChild(edit)
         tableBody.appendChild(row)
-    }))
-table.appendChild(tableBody)
+    })
+    table.appendChild(tableBody)
+}
 
 const editRow = ({target}) => {
     target.closest('tr').querySelectorAll('td').forEach(item =>
