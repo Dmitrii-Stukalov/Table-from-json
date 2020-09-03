@@ -28,14 +28,28 @@ tableHead.appendChild(headerRow)
 table.appendChild(tableHead)
 
 const hideColumn = ({target}) => {
-    target.parentNode.style.display = 'none'
+    // target.parentNode.style.display = 'none'
     target.parentNode.classList.add('hidden')
+    target.parentNode.querySelector('input').value = 'Show'
+    target.parentNode.querySelector('input').removeEventListener('click', hideColumn)
+    target.parentNode.querySelector('input').addEventListener('click', event => showColumn(event))
     const index = [...target.parentNode.parentNode.cells].indexOf(target.parentNode)
     target.parentNode.dataset.index = index.toString()
 
-    for (const tBody of target.closest('table').tBodies)
-        for (const row of tBody.rows)
-            row.childNodes[index].style.display = 'none'
+    for (const tBody of target.closest('table').tBodies) {
+        for (const row of tBody.rows) {
+            // row.childNodes[index].style.display = 'none'
+            row.childNodes[index].textContent = ''
+        }
+    }
+}
+
+const showColumn = ({target}) => {
+    target.parentNode.classList.remove('hidden')
+    target.parentNode.querySelector('input').removeEventListener('click', showColumn)
+    target.parentNode.querySelector('input').addEventListener('click', event => hideColumn(event))
+
+    createTable(table.dataset.page)
 }
 
 const tableBody = document.createElement('tbody')
@@ -65,6 +79,7 @@ const addButtons = amount => {
 }
 
 const createTable = (pageNumber) => {
+    table.dataset.page = pageNumber
     tableBody.textContent = ''
     persons.slice(10 * (pageNumber - 1), 10 * pageNumber).forEach(person => {
         const row = document.createElement('tr')
@@ -116,11 +131,14 @@ const createTable = (pageNumber) => {
     })
     table.appendChild(tableBody)
 
-    for (const header of tableBody.parentNode.querySelectorAll('th'))
+    for (const header of tableBody.parentNode.querySelectorAll('th')) {
         if (header.classList.contains('hidden')) {
-            for (const row of tableBody.childNodes)
-                row.childNodes[header.dataset.index].style.display = 'none'
+            for (const row of tableBody.childNodes) {
+                // row.childNodes[header.dataset.index].style.display = 'none'
+                row.childNodes[header.dataset.index].textContent = ''
+            }
         }
+    }
 }
 
 const editRow = ({target}) => {
