@@ -14,10 +14,29 @@ headers.forEach(header => {
     const element = document.createElement('th')
     const text = document.createTextNode(header)
     element.appendChild(text)
+
+    const button = document.createElement('input')
+    button.type = 'button'
+    button.value = 'Hide'
+
+    button.addEventListener('click', event => hideColumn(event))
+    element.appendChild(button)
+
     headerRow.appendChild(element)
 })
 tableHead.appendChild(headerRow)
 table.appendChild(tableHead)
+
+const hideColumn = ({target}) => {
+    target.parentNode.style.display = 'none'
+    target.parentNode.classList.add('hidden')
+    const index = [...target.parentNode.parentNode.cells].indexOf(target.parentNode)
+    target.parentNode.dataset.index = index.toString()
+
+    for (const tBody of target.closest('table').tBodies)
+        for (const row of tBody.rows)
+            row.childNodes[index].style.display = 'none'
+}
 
 const tableBody = document.createElement('tbody')
 
@@ -53,7 +72,6 @@ const createTable = (pageNumber) => {
         Object.keys(person).forEach(key => {
             switch (key) {
                 case 'name': {
-
                     const element = document.createElement('td')
                     const textNode = document.createTextNode(person[key].firstName)
                     element.appendChild(textNode)
@@ -95,6 +113,12 @@ const createTable = (pageNumber) => {
         tableBody.appendChild(row)
     })
     table.appendChild(tableBody)
+
+    for (const header of tableBody.parentNode.querySelectorAll('th'))
+        if (header.classList.contains('hidden')) {
+            for (const row of tableBody.childNodes)
+                row.childNodes[header.dataset.index].style.display = 'none'
+        }
 }
 
 const editRow = ({target}) => {
