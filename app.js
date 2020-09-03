@@ -97,6 +97,8 @@ const createTable = (pageNumber) => {
                 case 'eyeColor': {
                     const element = document.createElement('td')
                     const textNode = document.createTextNode(person[key])
+                    element.style.background = person[key]
+                    element.style.color = person[key]
                     element.appendChild(textNode)
                     row.appendChild(element)
                     break
